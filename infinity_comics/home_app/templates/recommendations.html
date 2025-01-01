@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Recommendations - Comics</title>
+{% endblock title %}
+
+{% block content %}
+<div class="content-box">
+    <h1 class="text-center" style="color: #ffc107;">Recommended Comics</h1>
+
+    {% if recommended_comics %}
+    <p class="text-center" style="color: #ffffff;">Based on your likes and favorite characters, we think you'll enjoy these comics.</p>
+    <!-- Lista de cómics recomendados -->
+    <div class="row">
+        {% for comic in recommended_comics %}
+        <div class="col-md-3 mb-4 d-flex flex-column align-items-center">
+            <a href="{% url 'comic_detail' comic.id %}" style="text-decoration: none;">
+                <img src="{{ comic.image }}" alt="{{ comic.title }}" style="width: 10rem; height: 15rem; border-radius: 10%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">{{ comic.title }}</h6>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center" style="color: #ffffff; font-size: 1.5rem; margin-top: 2rem;">It looks like you haven't marked any comics as liked! Try rating some comics to get recommendations.</p>
+    {% endif %}
+</div>
+{% endblock %}

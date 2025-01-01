@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load custom_tags %}
+{% block title %}
+<title>Login</title>
+{% endblock title %}
+
+{% block content %}
+{% block navbar%}
+{% endblock navbar %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow" style="background-color: rgba(34, 34, 34, 0.9); border-radius: 15px; border: none;">
+                <div class="card-body">
+                    <h1 class="text-center mb-4" style="color: #ffc107;">Login</h1>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label" style="color: #ffc107;">{{ field.label }}</label>
+                                {{ field|add_class:"form-control" }}
+                                {% if field.errors %}
+                                    <div class="text-danger small">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        {% if form.non_field_errors %}
+                            <div class="text-danger small" id="non-field-errors">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary w-100" style="border-radius: 15px; background-color: #6f42c1; border-color: #6f42c1;">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    setTimeout(function() {
+        var errorDiv = document.getElementById('non-field-errors');
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
+    }, 5000);
+</script>
+{% endblock content %}

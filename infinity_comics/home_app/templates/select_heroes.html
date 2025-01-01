@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Select Your Favorite Heroes</title>
+{% endblock title %}
+
+{% block content %}
+<div class="content-box">
+    <h1 class="text-center" style="color: #ffc107;">Select Your Favorite Characters</h1>
+    <p class="text-center" style="color: #ffffff;">Search and select your favorite characters below.</p>
+
+    <!-- Barra de búsqueda -->
+    <form method="get" class="d-flex justify-content-center mb-4">
+        <input type="text" name="search" class="form-control w-50 me-2" placeholder="Search characters..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Lista de personajes con paginación -->
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            {% for character in characters %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ character.photo }}" alt="{{ character.name }}" style="width: 6rem; height: 6rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">{{ character.name }}</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="selected_characters" value="{{ character.id }}"
+                           {% if character.id|stringformat:"s" in selected_ids %}checked{% endif %}
+                           onchange="updateSelection(this)">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Botones para confirmar selección -->
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" name="confirm" value="true" class="btn btn-success w-25" style="background-color: #6f42c1; border-color: #6f42c1;">Confirm Selection</button>
+        </div>
+    </form>
+
+    <!-- Paginación -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if characters.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1&search={{ search_query }}" style="color: #6f42c1;">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ characters.previous_page_number }}&search={{ search_query }}" style="color: #6f42c1;">Previous</a>
+            </li>
+            {% endif %}
+
+            {% for num in characters.paginator.page_range %}
+                {% if num > characters.number|add:-3 and num < characters.number|add:3 %}
+                <li class="page-item {% if characters.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&search={{ search_query }}" style="color: {% if characters.number == num %}#ffffff{% else %}#6f42c1{% endif %}; background-color: {% if characters.number == num %}#6f42c1{% else %}transparent{% endif %};">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if characters.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ characters.next_page_number }}&search={{ search_query }}" style="color: #6f42c1;">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ characters.paginator.num_pages }}&search={{ search_query }}" style="color: #6f42c1;">Last</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<script>
+function updateSelection(checkbox) {
+    const charId = checkbox.value;
+    const action = checkbox.checked ? 'add' : 'remove';
+
+    fetch("{% url 'update_selected_characters' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ char_id: charId, action: action })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'success') {
+            alert('Error updating selection');
+        }
+    });
+}
+</script>
+{% endblock %}

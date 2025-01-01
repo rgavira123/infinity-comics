@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Search Results</title>
+{% endblock title %}
+
+{% block content %}
+<div class="content-box">
+    <h1 class="text-center" style="color: #ffc107;">Search Results</h1>
+    <p class="text-center" style="color: #ffffff;">Results for "{{ query }}".</p>
+
+    <!-- Lista de resultados -->
+    <div class="row">
+        {% for result in results %}
+        <div class="col-md-3 mb-4 d-flex flex-column align-items-center">
+            <a href="{% url 'comic_detail' result.id %}" style="text-decoration: none;">
+                <img src="{{ result.image }}" alt="{{ result.title }}" style="width: 10rem; height: 15rem; border-radius: 10%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">{{ result.title }}</h6>
+                <p style="color: #ffffff;">{{ result.summary }}</p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

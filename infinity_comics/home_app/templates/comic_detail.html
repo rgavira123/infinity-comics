@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>{{ comic.title }} - Details</title>
+{% endblock title %}
+
+{% block content %}
+<div class="content-box">
+    <div class="row mb-4">
+        <!-- Imagen del cómic y botones -->
+        <div class="col-md-4 d-flex flex-column align-items-center">
+            <img src="{{ comic.image }}" alt="{{ comic.title }}" style="width: 15rem; height: 20rem; border-radius: 10%; margin: 10px auto;">
+            <!-- Botones debajo de la imagen -->
+            <div class="d-flex justify-content-center mt-3">
+                <button class="btn btn-outline-primary me-2" onclick="updateUserComic('read')" 
+                        style="background-color: {% if user_comic.read %}#6f42c1{% else %}transparent{% endif %}; color: {% if user_comic.read %}#ffffff{% else %}#6f42c1{% endif %};">
+                    📖 Read
+                </button>
+                <button class="btn btn-outline-success me-2" onclick="updateUserComic('like')" 
+                        style="background-color: {% if user_comic.liked %}#28a745{% else %}transparent{% endif %}; color: {% if user_comic.liked %}#ffffff{% else %}#28a745{% endif %};">
+                    👍 Like
+                </button>
+                <button class="btn btn-outline-danger" onclick="updateUserComic('dislike')" 
+                        style="background-color: {% if user_comic.disliked %}#dc3545{% else %}transparent{% endif %}; color: {% if user_comic.disliked %}#ffffff{% else %}#dc3545{% endif %};">
+                    👎 Dislike
+                </button>
+            </div>
+        </div>
+
+        <!-- Detalles del cómic -->
+        <div class="col-md-8">
+            <h1 style="color: #ffc107;">{{ comic.title }}</h1>
+            <p style="color: #ffffff;">{{ comic.summary }}</p>
+        </div>
+    </div>
+
+    <!-- Similar Comics -->
+    <h3 style="color: #ffc107;">Similar Comics</h3>
+    <div class="row mb-4">
+        {% if similar_comics %}
+            {% for similar_comic in similar_comics %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <a href="{% url 'comic_detail' similar_comic.id %}" style="text-decoration: none;">
+                    <img src="{{ similar_comic.image }}" alt="{{ similar_comic.title }}" style="width: 5rem; height: 7.5rem; border-radius: 10%; margin: 10px auto;">
+                    <h6 style="color: #ffffff;">{{ similar_comic.title }}</h6>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #ffffff;">No data</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Characters</h3>
+    <div class="row mb-4 characters">
+        {% if comic.characters.all %}
+            {% for character in comic.characters.all|slice:":24" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ character.photo }}" alt="{{ character.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ character.name }}
+                    {% if character in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% for character in comic.characters.all|slice:"24:" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center d-none">
+                <img src="{{ character.photo }}" alt="{{ character.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ character.name }}
+                    {% if character in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% if comic.characters.count > 24 %}
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" onclick="showMore('characters')">Show more</button>
+                <button class="btn btn-secondary d-none" onclick="showLess('characters')">Show less</button>
+            </div>
+            {% endif %}
+        {% else %}
+            <p style="color: #ffffff;">No data</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Teams</h3>
+    <div class="row mb-4 teams">
+        {% if comic.teams.all %}
+            {% for team in comic.teams.all|slice:":24" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ team.photo }}" alt="{{ team.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ team.name }}
+                    {% if team in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% for team in comic.teams.all|slice:"24:" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center d-none">
+                <img src="{{ team.photo }}" alt="{{ team.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ team.name }}
+                    {% if team in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% if comic.teams.count > 24 %}
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" onclick="showMore('teams')">Show more</button>
+                <button class="btn btn-secondary d-none" onclick="showLess('teams')">Show less</button>
+            </div>
+            {% endif %}
+        {% else %}
+            <p style="color: #ffffff;">No data</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Locations</h3>
+    <div class="row mb-4 locations">
+        {% if comic.locations.all %}
+            {% for location in comic.locations.all|slice:":24" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ location.photo }}" alt="{{ location.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ location.name }}
+                    {% if location in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% for location in comic.locations.all|slice:"24:" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center d-none">
+                <img src="{{ location.photo }}" alt="{{ location.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ location.name }}
+                    {% if location in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% if comic.locations.count > 24 %}
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" onclick="showMore('locations')">Show more</button>
+                <button class="btn btn-secondary d-none" onclick="showLess('locations')">Show less</button>
+            </div>
+            {% endif %}
+        {% else %}
+            <p style="color: #ffffff;">No data</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Concepts</h3>
+    <div class="row mb-4 concepts">
+        {% if comic.concepts.all %}
+            {% for concept in comic.concepts.all|slice:":24" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ concept.photo }}" alt="{{ concept.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ concept.name }}
+                    {% if concept in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% for concept in comic.concepts.all|slice:"24:" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center d-none">
+                <img src="{{ concept.photo }}" alt="{{ concept.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ concept.name }}
+                    {% if concept in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% if comic.concepts.count > 24 %}
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" onclick="showMore('concepts')">Show more</button>
+                <button class="btn btn-secondary d-none" onclick="showLess('concepts')">Show less</button>
+            </div>
+            {% endif %}
+        {% else %}
+            <p style="color: #ffffff;">No data</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Objects</h3>
+    <div class="row mb-4 related_objects">
+        {% if comic.related_objects.all %}
+            {% for obj in comic.related_objects.all|slice:":24" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ obj.photo }}" alt="{{ obj.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ obj.name }}
+                    {% if obj in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% for obj in comic.related_objects.all|slice:"24:" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center d-none">
+                <img src="{{ obj.photo }}" alt="{{ obj.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ obj.name }}
+                    {% if obj in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% if comic.related_objects.count > 24 %}
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" onclick="showMore('related_objects')">Show more</button>
+                <button class="btn btn-secondary d-none" onclick="showLess('related_objects')">Show less</button>
+            </div>
+            {% endif %}
+        {% else %}
+            <p style="color: #ffffff;">No data</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Story Arcs</h3>
+    <div class="row mb-4 story_arcs">
+        {% if comic.story_arcs.all %}
+            {% for story_arc in comic.story_arcs.all|slice:":24" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ story_arc.photo }}" alt="{{ story_arc.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ story_arc.name }}
+                    {% if story_arc in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% for story_arc in comic.story_arcs.all|slice:"24:" %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center d-none">
+                <img src="{{ story_arc.photo }}" alt="{{ story_arc.name }}" style="width: 4rem; height: 4rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">
+                    {{ story_arc.name }}
+                    {% if story_arc in favorite_characters %}
+                    <span style="color: red;">&#10084;</span>
+                    {% endif %}
+                </h6>
+            </div>
+            {% endfor %}
+            {% if comic.story_arcs.count > 24 %}
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" onclick="showMore('story_arcs')">Show more</button>
+                <button class="btn btn-secondary d-none" onclick="showLess('story_arcs')">Show less</button>
+            </div>
+            {% endif %}
+        {% else %}
+            <p style="color: #ffffff;">No data</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function showMore(section) {
+    const elements = document.querySelectorAll(`.${section} .d-none`);
+    elements.forEach(element => {
+        element.classList.remove('d-none');
+    });
+    document.querySelector(`.${section} .btn-primary`).classList.add('d-none');
+    document.querySelector(`.${section} .btn-secondary`).classList.remove('d-none');
+}
+
+function showLess(section) {
+    const elements = document.querySelectorAll(`.${section} .col-md-2`);
+    elements.forEach((element, index) => {
+        if (index >= 24) {
+            element.classList.add('d-none');
+        }
+    });
+    document.querySelector(`.${section} .btn-primary`).classList.remove('d-none');
+    document.querySelector(`.${section} .btn-secondary`).classList.add('d-none');
+}
+
+function updateUserComic(action) {
+    fetch("{% url 'update_user_comic' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ comic_id: {{ comic.id }}, action: action })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert('Error updating comic status');
+        }
+    });
+}
+</script>
+{% endblock %}

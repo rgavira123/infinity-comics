@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Profile - {{ user.username }}</title>
+{% endblock title %}
+
+{% block content %}
+<div class="content-box">
+    <h1 class="text-center" style="color: #ffc107;">{{ user.username }}'s Profile</h1>
+    
+    <hr style="border-top: 7px solid #ffc107;">
+
+    <h3 style="color: #ffc107;">Favorite Characters</h3>
+    <div class="row mb-4">
+        {% if favorite_characters %}
+            {% for character in favorite_characters %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <img src="{{ character.photo }}" alt="{{ character.name }}" style="width: 6rem; height: 6rem; border-radius: 50%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">{{ character.name }}</h6>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #ffffff;">No favorite characters selected.</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Read Comics</h3>
+    <div class="row mb-4">
+        {% if read_comics %}
+            {% for comic in read_comics %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <a href="{% url 'comic_detail' comic.id %}" style="text-decoration: none;">
+                    <img src="{{ comic.image }}" alt="{{ comic.title }}" style="width: 6rem; height: 9rem; border-radius: 10%; margin: 10px auto;">
+                    <h6 style="color: #ffffff;">{{ comic.title }}</h6>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #ffffff;">No comics read.</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Liked Comics</h3>
+    <div class="row mb-4">
+        {% if liked_comics %}
+            {% for comic in liked_comics %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <a href="{% url 'comic_detail' comic.id %}" style="text-decoration: none;">
+                    <img src="{{ comic.image }}" alt="{{ comic.title }}" style="width: 6rem; height: 9rem; border-radius: 10%; margin: 10px auto;">
+                    <h6 style="color: #ffffff;">{{ comic.title }}</h6>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #ffffff;">No liked comics.</p>
+        {% endif %}
+    </div>
+
+    <h3 style="color: #ffc107;">Disliked Comics</h3>
+    <div class="row mb-4">
+        {% if disliked_comics %}
+            {% for comic in disliked_comics %}
+            <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                <a href="{% url 'comic_detail' comic.id %}" style="text-decoration: none;">
+                    <img src="{{ comic.image }}" alt="{{ comic.title }}" style="width: 6rem; height: 9rem; border-radius: 10%; margin: 10px auto;">
+                    <h6 style="color: #ffffff;">{{ comic.title }}</h6>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #ffffff;">No disliked comics.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

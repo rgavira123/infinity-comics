@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Data Loading</title>
+{% endblock title %}
+
+{% block content %}
+{% block navbar%}
+{% endblock navbar %}
+<div class="content-box">
+    <h1>Data Not Loaded</h1>
+    <p class="lead text-danger">
+        The system currently does not have any data loaded.
+    </p>
+    <hr class="my-4">
+    <p>To ensure the system works correctly, the following steps need to be completed:</p>
+    <ul class="list-unstyled">
+        <li><i class="bi bi-star-fill text-warning me-2"></i> Scraping and loading of basic data.</li>
+        <li><i class="bi bi-star-fill text-warning me-2"></i> Creation of search indices using Whoosh.</li>
+        <li><i class="bi bi-star-fill text-warning me-2"></i> Calculate the similarity between comics.</li>
+    </ul>
+    <hr class="my-4">
+    <p class="text-danger">
+        This process might take a few minutes. Once completed, you will be redirected automatically.
+    </p>
+    <!-- Button to open the modal -->
+    <button class="btn btn-primary btn-lg mt-3" data-bs-toggle="modal" data-bs-target="#loadingModal" onclick="startLoading()">Load Data</button>
+</div>
+
+<!-- Loading modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background: linear-gradient(45deg, #343a40, #212529);"> <!-- Darker header with gradient background -->
+        <h5 class="modal-title" id="loadingModalLabel">Loading Data</h5>
+      </div>
+      <div class="modal-body text-dark"> <!-- Added text-dark to ensure visibility -->
+        <p>We are currently loading the necessary data. This may take a few minutes...</p>
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block extrajs %}
+<script>
+function startLoading() {
+    // AJAX call to trigger data loading
+    fetch("/cargar_datos/", { // Ensure this URL points to your data loading view
+        method: "GET",
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Redirect to the index page once loading is complete
+            window.location.href = "{% url 'index' %}";
+        }
+    })
+    .catch(error => {
+        console.error("Error while loading data:", error);
+        alert("There was an issue loading the data. Please try again.");
+    });
+}
+</script>
+{% endblock extrajs %}

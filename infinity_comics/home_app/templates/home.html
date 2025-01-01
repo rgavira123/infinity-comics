@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Home - Comics</title>
+{% endblock title %}
+
+{% block content %}
+<div class="content-box">
+    <h1 class="text-center" style="color: #ffc107;">All Comics</h1>
+    <p class="text-center" style="color: #ffffff;">Browse through all available comics below.</p>
+
+    <!-- Barra de búsqueda -->
+    <form method="get" class="d-flex justify-content-center mb-4">
+        <input type="text" name="search" class="form-control w-50 me-2" placeholder="Search comics..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Lista de cómics con paginación -->
+    <div class="row">
+        {% for comic in comics %}
+        <div class="col-md-3 mb-4 d-flex flex-column align-items-center">
+            <a href="{% url 'comic_detail' comic.id %}" style="text-decoration: none;">
+                <img src="{{ comic.image }}" alt="{{ comic.title }}" style="width: 10rem; height: 15rem; border-radius: 10%; margin: 10px auto;">
+                <h6 style="color: #ffffff;">{{ comic.title }}</h6>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if comics.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1&search={{ search_query }}" style="color: #6f42c1;">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ comics.previous_page_number }}&search={{ search_query }}" style="color: #6f42c1;">Previous</a>
+            </li>
+            {% endif %}
+
+            {% for num in comics.paginator.page_range %}
+                {% if num > comics.number|add:-3 and num < comics.number|add:3 %}
+                <li class="page-item {% if comics.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&search={{ search_query }}" style="color: {% if comics.number == num %}#ffffff{% else %}#6f42c1{% endif %}; background-color: {% if comics.number == num %}#6f42c1{% else %}transparent{% endif %};">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if comics.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ comics.next_page_number }}&search={{ search_query }}" style="color: #6f42c1;">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ comics.paginator.num_pages }}&search={{ search_query }}" style="color: #6f42c1;">Last</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}
